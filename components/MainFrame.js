@@ -1,16 +1,9 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React, { Component } from 'react';
 import QuestionFrame from '../components/QuestionFrame';
 import AnswerFrame from '../components/AnswerFrame';
 import ScoreFrame from '../components/ScoreFrame';
-import file from '../data.json'
+import file from '../data.json';
+import { BackHandler } from 'react-native';
 
 const MAX_QUESTION = 15;
 
@@ -19,7 +12,6 @@ export default class MainFrame extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            kanji: file.kanji[0].data,
             question: {},
             quiz: {},
             current: 1,
@@ -27,6 +19,7 @@ export default class MainFrame extends Component {
             incorrect: 0,
             countdown: -1
         };
+        this.kanji = [];
         this.currentQuestion = 0;
         this.arrayQuestion = [];
         this.generateQuestion = this.generateQuestion.bind(this);
@@ -34,18 +27,41 @@ export default class MainFrame extends Component {
         this.onAnswer = this.onAnswer.bind(this);
         this.random = [];
         this.interval;
-    }
-
-    UNSAFE_componentWillReceiveProps(props) {
-        if (props.level !== this.props.level) {
-            let kanji = file.kanji.find(data => data.level = props.level);
-            console.warn(kanji.data);
-        }
+        this.handleBackButton = this.handleBackButton.bind(this);
     }
 
     componentDidMount() {
+        // console.warn(this.props.navigation.getParam('level','N5'));
+        let level = this.props.navigation.getParam('level','N5');
+        let levelIndex = 0;
+        switch(level) {
+            case 'N5':
+                levelIndex = 0;
+                break;
+            case 'N4':
+                levelIndex = 1;
+                break;
+            case 'N3':
+                levelIndex = 2;
+                break;
+            case 'N2':
+                levelIndex = 3;
+                break;
+            default:
+                break;
+        }
+        this.kanji = file.kanji[levelIndex].data;
         this.generateQuestion();
         this.onQuestion(0);
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        clearInterval(this.interval);
     }
 
     shuffle(o) {
@@ -90,40 +106,42 @@ export default class MainFrame extends Component {
 
     generateQuestion() {
         let i=0, index = 0, count = 0;
-        let length = this.state.kanji.length;
+        let length = this.kanji.length;
         this.random = this.shuffle(Array.from({length: length}, () => {return i++}));
         for(count; count < MAX_QUESTION; count++) {
             let question = {};
             let quizIndex = Math.floor(Math.random() * 4);
             question.quizIndex = quizIndex;
             let arr = [];
-            arr.push(this.state.kanji[this.random[index++]]);
-            arr.push(this.state.kanji[this.random[index++]]);
-            arr.push(this.state.kanji[this.random[index++]]);
-            arr.push(this.state.kanji[this.random[index++]]);
+            arr.push(this.kanji[this.random[index++]]);
+            arr.push(this.kanji[this.random[index++]]);
+            arr.push(this.kanji[this.random[index++]]);
+            arr.push(this.kanji[this.random[index++]]);
             question.quiz = [...arr];
             this.arrayQuestion.push(question);
         }
     }
 
     onAnswer(isCorrect) {
-        if(isCorrect) {
-            // Calculate score
-            let correct = this.state.correct + 1;
-            this.setState({
-                correct: correct
-            });
-        } else {
-            let incorrect = this.state.incorrect + 1;
-            this.setState({
-                incorrect: incorrect
-            });
+        if(this.currentQuestion < MAX_QUESTION) {
+            if(isCorrect) {
+                // Calculate score
+                let correct = this.state.correct + 1;
+                this.setState({
+                    correct: correct
+                });
+            } else {
+                let incorrect = this.state.incorrect + 1;
+                this.setState({
+                    incorrect: incorrect
+                });
+            }
+            // Clear interval
+            clearInterval(this.interval);
+            // Next question
+            this.currentQuestion++;
+            this.onQuestion();
         }
-        // Clear interval
-        clearInterval(this.interval);
-        // Next question
-        this.currentQuestion++;
-        this.onQuestion();
     }
 
     render() {

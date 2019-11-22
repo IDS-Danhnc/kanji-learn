@@ -8,6 +8,15 @@
 
 import React, {Component} from 'react';
 import MenuFrame from './components/MenuFrame';
+import MainFrame from './components/MainFrame';
+import { createStackNavigator } from 'react-navigation-stack';
+import {createAppContainer} from 'react-navigation';
+
+const AppNavigator = createStackNavigator(
+  { MenuFrame: { screen: MenuFrame}, MainFrame: { screen: MainFrame } },
+  { headerMode: 'none' }
+)
+const AppNavigation = createAppContainer(AppNavigator);
 
 class App extends Component {
 
@@ -18,7 +27,7 @@ class App extends Component {
   render() {
     return (
       <>
-        <MenuFrame></MenuFrame>
+        <AppNavigation/>
       </>
     );
   }
