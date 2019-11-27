@@ -37,7 +37,6 @@ export default class MainFrame extends Component {
     }
 
     componentDidMount() {
-        // console.warn(this.props.navigation.getParam('level','N5'));
         let level = this.props.navigation.getParam('level','N5');
         this.onInitialize(level);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);

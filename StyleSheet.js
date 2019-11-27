@@ -176,14 +176,14 @@ export const result = StyleSheet.create({
         textAlign: "center"
     },
     resultHeader: {
-        height: "10%",
+        height: "8%",
         width: "100%",
         textAlign: "center",
         textAlignVertical: "center"
     },
     resultContent: {
         width: "100%",
-        height: "70%",
+        height: "72%",
         backgroundColor: "white"
     },
     resultFooter: {
@@ -248,7 +248,7 @@ export const result = StyleSheet.create({
         width: "100%",
         textAlignVertical: "center",
         textAlign: "center",
-        fontSize: 35,
+        fontSize: 30,
         fontWeight: "bold"
     }
 });

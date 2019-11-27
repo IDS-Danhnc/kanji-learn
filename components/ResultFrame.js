@@ -25,6 +25,9 @@ export default class ResultFrame extends Component {
         }
     }
 
+    componentWillUnmount() {
+    }
+
     render() {
         const { navigate } = this.props.navigation;
         const level = this.props.level;

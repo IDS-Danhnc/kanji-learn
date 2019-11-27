@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
 import {
-    SafeAreaView,
-    StyleSheet,
-    ScrollView,
     View,
     Text,
-    StatusBar,
-    TextInput
   } from 'react-native';
 import { styles } from '../StyleSheet';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class ScoreFrame extends Component {
 
@@ -19,10 +14,6 @@ export default class ScoreFrame extends Component {
           correct: 0,
           incorrect: 0
       };
-    }
-
-    UNSAFE_componentWillReceiveProps(props) {
-        //if(props.is)
     }
   
     render() {
