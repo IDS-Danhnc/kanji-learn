@@ -6,7 +6,6 @@ import {
     ImageBackground
   } from 'react-native';
 import { styles } from '../StyleSheet';
-import {Redirect} from 'react-router-dom';
 
 export const N5 = 'N5', N4 = 'N4', N3 = 'N3', N2 = 'N2', N1 = 'N1';
 
@@ -21,7 +20,7 @@ export default class MenuFrame extends Component {
   
     onPress(e) {
         //
-        // console.warn(e);
+        console.warn('Under development');
     }
 
     render() {

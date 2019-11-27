@@ -4,6 +4,7 @@ import AnswerFrame from '../components/AnswerFrame';
 import ScoreFrame from '../components/ScoreFrame';
 import file from '../data.json';
 import { BackHandler } from 'react-native';
+import ResultFrame from './ResultFrame';
 
 const MAX_QUESTION = 15;
 
@@ -17,7 +18,10 @@ export default class MainFrame extends Component {
             current: 1,
             correct: 0,
             incorrect: 0,
-            countdown: -1
+            countdown: -1,
+            wrongList: [],
+            isFinish: false,
+            level: 'N5'
         };
         this.kanji = [];
         this.currentQuestion = 0;
@@ -28,11 +32,22 @@ export default class MainFrame extends Component {
         this.random = [];
         this.interval;
         this.handleBackButton = this.handleBackButton.bind(this);
+        this.onInitialize = this.onInitialize.bind(this);
+        this.handleRetry = this.handleRetry.bind(this);
     }
 
     componentDidMount() {
         // console.warn(this.props.navigation.getParam('level','N5'));
         let level = this.props.navigation.getParam('level','N5');
+        this.onInitialize(level);
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    onInitialize(level) {
         let levelIndex = 0;
         switch(level) {
             case 'N5':
@@ -53,11 +68,9 @@ export default class MainFrame extends Component {
         this.kanji = file.kanji[levelIndex].data;
         this.generateQuestion();
         this.onQuestion(0);
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        this.setState({
+            level: level
+        });
     }
 
     handleBackButton() {
@@ -85,8 +98,11 @@ export default class MainFrame extends Component {
                     this.currentQuestion++;
                     that.onQuestion();
                     let incorrect = this.state.incorrect + 1;
+                    let wrong = [...that.state.wrongList];
+                    wrong.push(question.quiz[question.quizIndex]);
                     this.setState({
-                        incorrect: incorrect
+                        incorrect: incorrect,
+                        wrongList: wrong
                     });
                 }
             }, 1000);
@@ -96,11 +112,10 @@ export default class MainFrame extends Component {
                 current: this.currentQuestion
             });
         } else {
-            // this.setState({
-            //     current: this.currentQuestion
-            // });
             // Stop all
-            console.warn('Finish');
+            this.setState({
+                isFinish: true
+            });
         }
     }
 
@@ -122,7 +137,7 @@ export default class MainFrame extends Component {
         }
     }
 
-    onAnswer(isCorrect) {
+    onAnswer(isCorrect, object) {
         if(this.currentQuestion < MAX_QUESTION) {
             if(isCorrect) {
                 // Calculate score
@@ -132,8 +147,11 @@ export default class MainFrame extends Component {
                 });
             } else {
                 let incorrect = this.state.incorrect + 1;
+                let wrong = [...this.state.wrongList];
+                wrong.push(object);
                 this.setState({
-                    incorrect: incorrect
+                    incorrect: incorrect,
+                    wrongList: wrong
                 });
             }
             // Clear interval
@@ -144,12 +162,30 @@ export default class MainFrame extends Component {
         }
     }
 
+    handleRetry() {
+        this.setState({
+            question: {},
+            quiz: {},
+            current: 1,
+            correct: 0,
+            incorrect: 0,
+            countdown: -1,
+            wrongList: [],
+            isFinish: false
+        });
+        this.currentQuestion = 0;
+        this.arrayQuestion = [];
+        this.random = [];
+        this.onInitialize(this.state.level);
+    }
+
     render() {
         return (
             <>
                 <ScoreFrame maxQuestion={MAX_QUESTION} currentQuestion={this.state.current} correct={this.state.correct} incorrect={this.state.incorrect} count={this.state.countdown}></ScoreFrame>
                 <QuestionFrame question={this.state.question}></QuestionFrame>
                 <AnswerFrame answer={this.state.quiz} onAnswer={this.onAnswer}></AnswerFrame>
+                {this.state.isFinish ? <ResultFrame result={this.state.wrongList} navigation={this.props.navigation} onRetry={this.handleRetry}></ResultFrame> : <></>}
             </>
         );
     }

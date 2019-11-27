@@ -37,7 +37,7 @@ export default class AnswerFrame extends Component {
     }
 
     onTouch(e) {
-        this.props.onAnswer(this.state.correct == e);
+        this.props.onAnswer(this.state.correct == e, this.props.answer.quiz[this.state.correct]);
     }
   
     render() {

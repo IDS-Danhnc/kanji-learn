@@ -6,14 +6,15 @@
  * @flow
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import MenuFrame from './components/MenuFrame';
 import MainFrame from './components/MainFrame';
+import ResultFrame from './components/ResultFrame';
 import { createStackNavigator } from 'react-navigation-stack';
-import {createAppContainer} from 'react-navigation';
+import { createAppContainer } from 'react-navigation';
 
 const AppNavigator = createStackNavigator(
-  { MenuFrame: { screen: MenuFrame}, MainFrame: { screen: MainFrame } },
+  { MenuFrame: { screen: MenuFrame }, MainFrame: { screen: MainFrame }, ResultFrame: { screen: ResultFrame } },
   { headerMode: 'none' }
 )
 const AppNavigation = createAppContainer(AppNavigator);
@@ -27,7 +28,7 @@ class App extends Component {
   render() {
     return (
       <>
-        <AppNavigation/>
+        <AppNavigation />
       </>
     );
   }
